@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Desconectado - Distribuidora Siade{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px; max-width: 600px; margin: 40px auto; background-color: #f9f9f9; border-radius: 8px;">
+    <h1>Você saiu da sua conta</h1>
+    <p style="font-size: 1.1em; color: #555;">Obrigado por visitar nossa loja. Esperamos vê-lo novamente em breve!</p>
+    <div style="margin-top: 30px;">
+        <a href="{% url 'login' %}" class="button" style="background-color: #007bff; color:white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Fazer Login Novamente</a>
+    </div>
+</div>
+{% endblock %}

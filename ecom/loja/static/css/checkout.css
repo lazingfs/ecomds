@@ -1,0 +1,100 @@
+.checkout-container {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #006400; /* Verde Escuro */
+            border-bottom: 2px solid #006400;
+            padding-bottom: 10px;
+        }
+        .checkout-grid {
+            display: flex;
+            gap: 30px; /* Aumentado o gap para mais espaçamento */
+            flex-wrap: wrap; /* Permite quebra de linha em telas menores */
+            margin-bottom: 30px;
+        }
+        .order-summary, .customer-info {
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .order-summary {
+            flex: 2; /* Ocupa mais espaço */
+            min-width: 300px; /* Largura mínima antes de quebrar */
+            background-color: #fff;
+        }
+        .customer-info {
+            flex: 1; /* Ocupa menos espaço */
+            min-width: 280px; /* Largura mínima */
+            background-color: #eef4ff; /* Um azul claro suave para diferenciar */
+        }
+        .order-summary h2, .customer-info h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #0056b3; /* Azul para os títulos das seções */
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .order-summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .order-summary li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .order-summary li:last-child {
+            border-bottom: none;
+        }
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3em; /* Aumentado o tamanho da fonte */
+            font-weight: bold;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #006400; /* Linha verde mais grossa no total */
+            color: #006400; /* Verde Escuro */
+        }
+        .customer-info p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .confirmation-form {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .confirmation-form .button {
+            padding: 12px 25px; /* Ajustado o padding */
+            font-size: 1.1em; /* Ajustado o tamanho da fonte */
+            background-color: #007bff; /* Azul para o botão primário */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .confirmation-form .button:hover {
+            background-color: #0056b3; /* Azul mais escuro no hover */
+        }
+        .alert-danger { /* Para erros do formulário */
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: .75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+        }

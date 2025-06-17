@@ -1,0 +1,144 @@
+ .product-detail-container {
+            display: flex;
+            flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas menores */
+            gap: 40px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .product-image-area {
+            flex: 1; /* Ocupa o máximo de espaço possível */
+            min-width: 300px; /* Garante um tamanho mínimo para a imagem */
+            text-align: center;
+        }
+
+        .product-detail-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .product-info-area {
+            flex: 2; /* Ocupa mais espaço que a imagem */
+            min-width: 300px; /* Garante um tamanho mínimo para as informações */
+        }
+
+        .product-info-area h1 {
+            font-size: 2.5em;
+            color: #006400; /* Verde escuro */
+            margin-bottom: 10px;
+        }
+
+        .product-category {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .product-category a {
+            color: #008000; /* Verde */
+            text-decoration: none;
+        }
+
+        .product-category a:hover {
+            text-decoration: underline;
+        }
+
+        .product-description {
+            font-size: 1em;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .product-price {
+            font-size: 2em;
+            color: #B22222; /* Vermelho para o preço, para destacar */
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .in-stock {
+            color: #008000; /* Verde para em estoque */
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .out-of-stock {
+            color: #CC0000; /* Vermelho para esgotado */
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .add-to-cart-btn {
+            background-color: #008000; /* Verde */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #006400; /* Verde mais escuro no hover */
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 70px;
+        }
+
+        .back-link {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .back-link a {
+            color: #008000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: 200px; /* Ajuste esta altura conforme sua preferência */
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 10px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Ajuste o minmax conforme a largura desejada para cada item/imagem */
+            gap: 20px;
+            justify-content: center;
+        }
+ 
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .product-detail-container {
+                flex-direction: column; /* Empilha os itens em telas menores */
+                padding: 20px;
+                gap: 20px;
+            }
+            .product-image-area, .product-info-area {
+                min-width: unset; /* Remove o min-width para telas pequenas */
+                width: 100%;
+            }
+            .product-detail-img {
+                max-width: 80%; /* Ajusta para imagens em telas menores */
+            }
+        }

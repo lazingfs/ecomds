@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}Produtos de {{ categoria.nome }} - Distribuidora Siade{% endblock %}
+
+{% block extra_css %}
+    {# Reutilizamos o CSS de produto_list para o layout de grade dos produtos #}
+    <link rel="stylesheet" href="{% static 'css/produto_list.css' %}">
+    <style>
+        /* Estilos específicos para a página de categoria, se necessário */
+        .category-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #006400; /* Verde escuro */
+        }
+        .category-header h1 {
+            color: #006400;
+            font-size: 2.5em;
+        }
+        .category-description {
+            color: #555;
+            margin-top: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .all-categories-link {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        .all-categories-link a {
+            color: #008000;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: 1px solid #008000;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .all-categories-link a:hover {
+            background-color: #008000;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="category-header">
+        <h1>Produtos em {{ categoria.nome }}</h1>
+        {% if categoria.descricao %}
+            <p class="category-description">{{ categoria.descricao }}</p>
+        {% endif %}
+        <div class="all-categories-link">
+            {# Agora, este link pode levar para a nova página que lista TODAS as categorias #}
+            <a href="{% url 'lista_categorias' %}">Ver todas as Categorias</a>
+        </div>
+    </div>
+
+    <div class="product-grid">
+        {% if produtos %} {# Verifica se há produtos nesta categoria #}
+            {% for produto in produtos %}
+                <div class="product-item">
+                    <a href="{% url 'produto_detalhe' produto.slug %}">
+                        {% if produto.imagem %}
+                            <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                        {% else %}
+                            {# Certifique-se de ter um placeholder.png em static/img/ #}
+                            <img src="{% static 'img/placeholder.png' %}" alt="Sem Imagem"> 
+                        {% endif %}
+                        <h2>{{ produto.nome }}</h2>
+                        <p class="price">R$ {{ produto.preco }}</p>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align: center; grid-column: 1 / -1; padding: 20px;">Não há produtos nesta categoria no momento.</p>
+        {% endif %}
+    </div>
+{% endblock %}

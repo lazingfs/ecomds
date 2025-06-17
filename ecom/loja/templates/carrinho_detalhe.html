@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seu Carrinho - Distribuidora Siade{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/carrinho_detalhe.css' %}">
+    <style>
+        .carrinho-tabela {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .carrinho-tabela th, .carrinho-tabela td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .carrinho-tabela th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .carrinho-tabela img {
+            max-width: 80px;
+            height: auto;
+            border-radius: 4px;
+        }
+        .produto-info {
+            display: flex;
+            align-items: center;
+        }
+        .produto-info div {
+            margin-left: 15px;
+        }
+        .acoes-form {
+            display: flex;
+            align-items: center;
+        }
+        .acoes-form input[type="number"] {
+            width: 60px;
+            margin-right: 5px;
+        }
+        .carrinho-rodape {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .carrinho-total-texto {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #006400;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="carrinho-container">
+    <h1 class="carrinho-header">Seu Carrinho de Compras</h1>
+
+    {% if messages %}
+        {% endif %}
+
+    {% if carrinho %}
+    <table class="carrinho-tabela">
+        <thead>
+            <tr>
+                <th colspan="2">Produto</th>
+                <th>Preço Unitário</th>
+                <th>Quantidade</th>
+                <th>Subtotal</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for produto_id, item in carrinho.items %}
+            <tr>
+                <td>
+                    <a href="{% url 'produto_detalhe' item.slug %}">
+                        <img src="{{ item.imagem_url|default_if_none:'' }}{% if not item.imagem_url %}{% static 'img/placeholder.png' %}{% endif %}" alt="{{ item.nome }}">
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'produto_detalhe' item.slug %}">{{ item.nome }}</a>
+                </td>
+                <td>R$ {{ item.preco|floatformat:2 }}</td>
+                <td>
+                    <form class="acoes-form" action="{% url 'atualizar_quantidade_carrinho' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="produto_id" value="{{ produto_id }}">
+                        <input type="number" name="quantidade" value="{{ item.quantidade }}" min="0" {% if item.produto_obj %}max="{{ item.produto_obj.estoque }}"{% endif %} aria-label="Quantidade">
+                        <button type="submit" class="btn-atualizar" title="Atualizar quantidade">&#x21bb;</button> {# Símbolo de recarregar #}
+                    </form>
+                </td>
+                <td>R$ {{ item.subtotal|floatformat:2 }}</td>
+                <td>
+                    <a href="{% url 'remover_do_carrinho' produto_id=produto_id %}" class="btn-remover" title="Remover item">Remover</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="carrinho-rodape">
+        <div class="carrinho-total-texto">
+            Total: R$ {{ total_carrinho|floatformat:2 }}
+        </div>
+        <div class="carrinho-acoes-finais">
+            <a href="{% url 'produto_list' %}" class="button" style="background-color: #5a6268; margin-right: 10px;">Continuar Comprando</a>
+            <a href="#" class="button" style="background-color: #006400;">Finalizar Compra</a>
+        </div>
+    </div>
+
+    {% else %}
+        <p class="carrinho-vazio">Seu carrinho está vazio.</p>
+    {% endif %}
+</div>
+{% endblock %}

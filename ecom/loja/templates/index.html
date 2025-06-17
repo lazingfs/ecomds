@@ -1,0 +1,32 @@
+{% extends 'base.html' %} 
+
+{% block title %}Página Inicial - Distribuidora Siade{% endblock %}
+
+{% block content %}
+    <div class="home-content">
+        <h2>Bem-vindo à Distribuidora Siade!</h2>
+        <p>Encontre os melhores produtos para o seu negócio.</p>
+        <a href="{% url 'produto_list' %}" class="button">Ver Produtos</a>
+        
+    </div>
+{% endblock %}
+
+
+
+{% block extra_css %}
+    <style>
+        .home-content {
+            text-align: center;
+            padding: 50px;
+            background-color: #f9f9f9;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #008000;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/registro_clientes.css' %}">
+{% endblock %} 
+
+
+{% block title %}{{ page_title|default:"Registrar" }} - Distribuidora Siade{% endblock %}
+
+
+{% block content %}
+<div class="registration-form-container">
+    <h1>Criar Nova Conta</h1>
+    <p style="text-align: center; color: #555;">Complete os campos abaixo para se registrar.</p>
+
+    {% if messages %}
+        {# ... bloco de mensagens ... #}
+    {% endif %}
+
+    <form method="post" id="registrationForm">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h2>Informações de Acesso</h2>
+            <p>Seus dados para login. Para empresas, informe os dados do responsável pela conta.</p>
+            {{ user_form.as_p }}
+        </div>
+
+        <div class="form-section">
+            <h2>Informações do Cliente</h2>
+            {{ profile_form.tipo_cliente.label_tag }}
+            {{ profile_form.tipo_cliente }}
+            
+            <div id="pf-fields" class="pf-fields">
+                {{ profile_form.cpf.label_tag }}
+                {{ profile_form.cpf }}
+                {{ profile_form.cpf.errors }}
+                <span class="helptext">{{ profile_form.cpf.help_text }}</span>
+            </div>
+
+            <div id="pj-fields" class="pj-fields">
+                {{ profile_form.razao_social.label_tag }}
+                {{ profile_form.razao_social }}
+                {{ profile_form.razao_social.errors }}
+
+                {{ profile_form.nome_fantasia.label_tag }}
+                {{ profile_form.nome_fantasia }}
+                {{ profile_form.nome_fantasia.errors }}
+
+                {{ profile_form.cnpj.label_tag }}
+                {{ profile_form.cnpj }}
+                {{ profile_form.cnpj.errors }}
+                <span class="helptext">{{ profile_form.cnpj.help_text }}</span>
+
+                {{ profile_form.inscricao_estadual.label_tag }}
+                {{ profile_form.inscricao_estadual }}
+                {{ profile_form.inscricao_estadual.errors }}
+            </div>
+
+            <br>
+            {{ profile_form.telefone.label_tag }}
+            {{ profile_form.telefone }}
+            {{ profile_form.telefone.errors }}
+
+            {{ profile_form.endereco.label_tag }}
+            {{ profile_form.endereco }}
+            {{ profile_form.endereco.errors }}
+            <span class="helptext">{{ profile_form.endereco.help_text }}</span>
+
+        </div>
+        
+        <div style="text-align: center; margin-top: 25px;">
+            <button type="submit" class="button">Registrar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoClienteRadios = document.querySelectorAll('input[name="tipo_cliente"]');
+    const pfFields = document.getElementById('pf-fields');
+    const pjFields = document.getElementById('pj-fields');
+
+    function toggleFields() {
+        
+        const selectedType = document.querySelector('input[name="tipo_cliente"]:checked').value;
+        
+        if (selectedType === 'PF') {
+            pfFields.style.display = 'block';
+            pjFields.style.display = 'none';
+        } else if (selectedType === 'PJ') {
+            pfFields.style.display = 'none';
+            pjFields.style.display = 'block';
+        }
+    }
+
+    tipoClienteRadios.forEach(radio => radio.addEventListener('change', toggleFields));
+    
+    if (document.querySelector('input[name="tipo_cliente"]:checked')) {
+       toggleFields();
+    }
+});
+</script>
+{% endblock %}

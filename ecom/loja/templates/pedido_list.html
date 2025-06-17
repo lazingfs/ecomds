@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Histórico de Pedidos - Distribuidora Siade{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 960px; margin: 30px auto;">
+    <h1>Histórico Completo de Pedidos</h1>
+    <p>Aqui estão todos os pedidos que você já realizou em nossa loja.</p>
+
+    {% if pedidos %}
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead style="background-color: #f2f2f2;">
+                <tr>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Nº do Pedido</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Data</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Status</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Total</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos %}
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #ddd;">#{{ pedido.id }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ pedido.data_pedido|date:"d/m/Y H:i" }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ pedido.get_status_display }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">R$ {{ pedido.total|floatformat:2 }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <a href="{% url 'pedido_detalhe' pk=pedido.pk %}" class="button" style="padding: 5px 10px; font-size: 0.9em;">Ver Detalhes</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin-top: 20px;">Você ainda não realizou nenhum pedido.</p>
+    {% endif %}
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'minha_conta' %}">← Voltar para Minha Conta</a>
+    </div>
+</div>
+{% endblock %}

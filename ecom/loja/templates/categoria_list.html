@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/categoria_list.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="category-list-container">
+        <h1 class="category-list-header">Todas as Categorias</h1>
+        <ul class="category-list">
+            {% for categoria in categorias %}
+                <li class="category-item">
+                    <a href="{% url 'produtos_por_categoria' categoria.slug %}">{{ categoria.nome }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Minha Conta - Distribuidora Siade{% endblock %}
+
+{% block extra_css %}
+<style>
+    .account-container { max-width: 960px; margin: 30px auto; }
+    .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+    .tab-button { padding: 10px 20px; cursor: pointer; border: none; background: none; font-size: 1.1em; }
+    .tab-button.active { border-bottom: 2px solid #007bff; color: #007bff; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .profile-form, .order-section { padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 5px; }
+    .form-section h3, .order-section h3 { margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    .order-section table { width: 100%; border-collapse: collapse; }
+    .order-section th, .order-section td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+    .order-section th { background-color: #f2f2f2; }
+    .history-button-container { text-align: center; margin-top: 25px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="account-container">
+    <h1>Painel do Cliente</h1>
+
+    {% if messages %}{# ... bloco de mensagens ... #}{% endif %}
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab(event, 'Perfil')">Meu Perfil</button>
+        <button class="tab-button" onclick="openTab(event, 'Pedidos')">Pedidos em Andamento</button>
+    </div>
+
+    <div id="Perfil" class="tab-content active">
+        <form method="post" class="profile-form">
+            {% csrf_token %}
+            <div class="form-section">
+                <h3>Informações de Acesso</h3>
+                {{ user_form.as_p }}
+            </div>
+            <div class="form-section">
+                <h3>Informações do Cliente ({{ profile_form.instance.get_tipo_cliente_display }})</h3>
+                {{ profile_form.as_p }}
+            </div>
+            <button type="submit" class="button" style="margin-top: 20px;">Salvar Alterações</button>
+        </form>
+    </div>
+
+    <div id="Pedidos" class="tab-content">
+        <div class="order-section">
+            <h3>Seus Pedidos em Andamento</h3>
+            
+            {% if pedidos_em_andamento %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nº do Pedido</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos_em_andamento %}
+                    <tr>
+                        <td>#{{ pedido.id }}</td>
+                        <td>{{ pedido.data_pedido|date:"d/m/Y H:i" }}</td>
+                        <td>{{ pedido.get_status_display }}</td>
+                        <td>R$ {{ pedido.total|floatformat:2 }}</td>
+                        <td><a href="{% url 'pedido_detalhe' pk=pedido.pk %}">Ver Detalhes</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Você não possui pedidos em andamento no momento.</p>
+            {% endif %}
+
+            <div class="history-button-container">
+                <a href="{% url 'pedido_list' %}" class="button" style="background-color: #6c757d;">Ver Histórico Completo de Pedidos</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    {# ... script de abas permanece o mesmo ... #}
+{% endblock %}

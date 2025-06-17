@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-g">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Distribuidora Siade{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base_siade.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-container">
+            <a href="{% url 'index' %}"><h1>Distribuidora Siade</h1></a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="{% url 'index' %}">Início</a></li>
+                <li><a href="{% url 'produto_list' %}">Produtos</a></li>
+                <li><a href="{% url 'lista_categorias' %}">Categorias</a></li>
+                <li><a href="{% url 'carrinho_detalhe' %}">Carrinho</a></li>
+                
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'minha_conta' %}">Minha Conta</a></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-logout-button">Sair</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Registrar</a></li>
+                {% endif %}
+                </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; {% now "Y" %} Distribuidora Siade. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

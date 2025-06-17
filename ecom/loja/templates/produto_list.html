@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Lista de Produtos - Distribuidora Siade{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/produto_list.css' %}">
+{% endblock  %} 
+
+
+{% block content %}
+    <h1>Nossos Produtos</h1>
+    <div class="product-grid">
+        {% for produto in produtos %}
+            <div class="product-item">
+                <a href="{% url 'produto_detalhe' produto.slug %}">
+                    <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                    <h2>{{ produto.nome }}</h2>
+                    <p class="price">R$ {{ produto.preco }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
