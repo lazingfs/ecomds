@@ -52,7 +52,7 @@ class ClienteProfileForm(forms.ModelForm):
          return cleaned_data
        
 
-       #------------------------edição para minha conta------------------------
+       #------------------------edição para conta cliente------------------------
 class UserEditForm(forms.ModelForm):
    class Meta: 
       model = User
@@ -69,9 +69,9 @@ class UserEditForm(forms.ModelForm):
 class ClienteProfileEditForm(forms.ModelForm):
    
    class Meta:
-      model: Cliente
+      model = Cliente
       
-      eclude = ['user', 'tipo_cliente']
+      exclude = ['user', 'tipo_cliente']
       wigets = {
          'telefone': 'Telefone(com DDD)',
          'endereco': 'Endereco Completo(Rua, Número, Bairro, Cidade, CEP)',
@@ -96,7 +96,7 @@ class ClienteProfileEditForm(forms.ModelForm):
             del self.fields['nome_fantasia']
             del self.fields['cnpj']
             del self.fields['inscricao_estadual']
-         elif instance.tipo_clinete == Cliente.TIPO_PESSOA_JURIDICA:
+         elif instance.tipo_cliente == Cliente.TIPO_PESSOA_JURIDICA:
 
             del self.fields['cpf']
      

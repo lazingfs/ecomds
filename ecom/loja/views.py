@@ -124,25 +124,6 @@ def minha_conta_view(request):
         
     }
     return render(request, 'registration/minha_conta.html', context)
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #------------------ Pedidos do cliente logado---------------------
@@ -183,7 +164,7 @@ def checkout (request):
         form = ConfirmacaoPedidoForm(request.POST)
         if form.is_valid():
            #objeto pedido
-           pedido = Pedido.objects.create(cliente=Cliente)
+           pedido = Pedido.objects.create(cliente=cliente)
 
            for produto_id_str, item_data_sessao in carrinho_sessao.items():
                prduto_id_int = int(produto_id_str)
