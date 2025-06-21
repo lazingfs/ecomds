@@ -3,6 +3,7 @@ from django.urls import path, include
 
 from .views import  (
     
+    PedidoListView,
     minha_conta_view,
     register_view,
     checkout,
@@ -36,7 +37,7 @@ urlpatterns = [
 
     path('checkout/', checkout, name='checkout'),
     path('pedido/sucesso/<int:pedido_id>/', pedido_sucesso, name='pedido_sucesso'),
-    
+    path('meus_pedidos/', PedidoListView.as_view(), name='pedido_list'),
 
     path('contas/', include('django.contrib.auth.urls')),
     path('contas/registrar/', register_view, name='register'),

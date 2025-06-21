@@ -341,3 +341,19 @@ def remover_do_carrinho(request, produto_id): # produto_id vem da URL
         messages.warning(request, 'Produto não encontrado no carrinho.')
 
     return redirect('carrinho_detalhe')
+
+
+#------------------------Histórico de pedidos do cliente------------------------
+
+class PedidoListView(LoginRequiredMixin, ListView):
+    model = Pedido
+    template_name = 'pedido_list.html'
+    context_object_name = 'pedidos'
+    paginate_by = 10
+
+    def get_queryset(self):
+        
+        if hasattr(self.request.user, 'cliente'):
+            return Pedido.objects.filter(cliente=self.request.user.cliente).order_by('-data_pedido')
+        return Pedido.objects.none()
+        
