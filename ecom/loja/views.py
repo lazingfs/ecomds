@@ -95,35 +95,58 @@ def minha_conta_view(request):
     try:
         cliente = request.user.cliente
     except Cliente.DoesNotExist:
-        messages.error(request, 'Perfil não encontrado.')
-        return redirect('register')  # redireciona para a criação de conta
+        return redirect('home')
     
+    status_em_andamento= ['aguardando', 'processando', 'enviado']
+
+    status_anteriores = ['entregue', 'cancelado']
+
+    pedidos_em_andamento = Pedido.objects.filter(
+        cliente=cliente,
+        status__in=status_em_andamento
+    ).order_by('-data_pedido')
+
+    pedidos_anteriores = Pedido.objects.filter(
+        cliente=cliente,
+        status__in=status_anteriores
+    ).order_by('-data_pedido')
+
     if request.method == 'POST':
         user_form = UserEditForm(request.POST, instance=request.user)
-        profile_form = ClienteProfileForm(request.POST, request.FILES, instance=cliente)
-        
+        profile_form = ClienteProfileEditForm(request.POST, request.FILES, instance=cliente)
+
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.sucess(request, 'Perfil atualizado com sucesso!')
+            messages.success(request, 'Alterações salvas com sucesso!')
             return redirect('minha_conta')
         else:
-            messages.error(request, 'Erro ao atualizar o perfil. Verifique os dados e tente novamente.')
-    else:
-        user_form = UserEditForm(instance=request.user)
-        profile_form = ClienteProfileForm(instance=cliente)
-    
-    pedidos_em_andamento = Pedido.objects.filter(cliente=cliente).exclude(
-        Q(status=Pedido.STATUS_ENTREGUE) | Q(status=Pedido.STATUS_CANCELADO)
-    ).order_by('-data_pedido')
+            user_form = UserEditForm(instance=request.user)
+            profile_form = ClienteProfileEditForm(instance=cliente)
 
-    context = { 
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'pedidos_em_andamento': pedidos_em_andamento,
-        
-    }
-    return render(request, 'registration/minha_conta.html', context)
+        context = {
+            'user_form' : user_form,
+            'profile_form' : profile_form,
+            'pedidos_em_andamento': pedidos_em_andamento,
+            'pedidos_anteriores': pedidos_anteriores,
+            'cliente' : cliente,
+        }
+        return render(request, 'registro_clientes/minha_conta.html', context)
+
+
+
+
+           
+
+           
+
+
+
+
+
+
+
+
 
 
 #------------------ Pedidos do cliente logado---------------------

@@ -17,14 +17,114 @@
     .order-section th, .order-section td { padding: 12px; border: 1px solid #ddd; text-align: left; }
     .order-section th { background-color: #f2f2f2; }
     .history-button-container { text-align: center; margin-top: 25px; }
+
+     .success-overlay {
+        display: none; /* Escondido por padrão */
+        position: fixed; /* Fica por cima de todo o conteúdo */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente */
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .success-content {
+        background-color: #fff;
+        padding: 40px 60px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transform: scale(0.9);
+        animation: popup-animation 0.3s ease-out forwards;
+    }
+
+    @keyframes popup-animation {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .success-icon {
+        font-size: 50px;
+        color: #28a745; /* Verde */
+        display: block;
+        margin-bottom: 20px;
+    }
+
+    .success-content p {
+        font-size: 1.2em;
+        color: #333;
+        margin: 0;
+        font-weight: 500;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+
+{# ========= INÍCIO DO HTML DA NOTIFICAÇÃO ========= #}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div id="success-overlay" class="success-overlay">
+                <div class="success-content">
+                    <span class="success-icon">&#10004;</span> {# Símbolo de "correto" #}
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{# ========= FIM DO HTML DA NOTIFICAÇÃO ========= #}
+
+
+<div class="account{% block content %}
+
+{# ========= INÍCIO DO HTML DA NOTIFICAÇÃO ========= #}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div id="success-overlay" class="success-overlay">
+                <div class="success-content">
+                    <span class="success-icon">&#10004;</span> {# Símbolo de "correto" #}
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{# ========= FIM DO HTML DA NOTIFICAÇÃO ========= #}
+
+
 <div class="account-container">
     <h1>Painel do Cliente</h1>
 
-    {% if messages %}{# ... bloco de mensagens ... #}{% endif %}
+    {# Mensagens de erro ou aviso ainda podem aparecer aqui, se necessário #}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags != 'success' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}-container">
+    <h1>Painel do Cliente</h1>
+
+    {# Mensagens de erro ou aviso ainda podem aparecer aqui, se necessário #}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags != 'success' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     <div class="tabs">
         <button class="tab-button active" onclick="openTab(event, 'Perfil')">Meu Perfil</button>
@@ -86,5 +186,54 @@
 {% endblock %}
 
 {% block extra_js %}
-    {# ... script de abas permanece o mesmo ... #}
+<script>
+        function openTab(evt, tabName) {
+            // ... (seu código de abas)
+        }
+</script>
+    
+    {# ========= INÍCIO DO JAVASCRIPT DA NOTIFICAÇÃO ========= #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.getElementById('success-overlay');
+
+        // Se o elemento da notificação existir na página...
+        if (overlay) {
+            // ...mostra ele...
+            overlay.style.display = 'flex';
+
+            // ...e define um timer para escondê-lo após 3 segundos.
+            setTimeout(function() {
+                overlay.style.display = 'none';
+            }, 3000); // 3000 milissegundos = 3 segundos
+        }
+    });
+</script>
+    {# ========= FIM DO JAVASCRIPT DA NOTIFICAÇÃO ========= #}
+    
+<script>
+    function openTab(evt, tabName) {
+        // Pega todos os elementos com a classe "tab-content" e os esconde
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Pega todos os botões e remove a classe "active"
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Mostra a aba atual e adiciona a classe "active" ao botão que abriu a aba
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // Garante que a primeira aba esteja ativa ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.tab-button').click();
+    });
+</script>
 {% endblock %}
