@@ -215,16 +215,17 @@ def checkout (request):
                request.session.modified = True
                messages.success(request, f"Pedido #{pedido.id} realizado com sucesso!")
                return redirect('pedido_sucesso', pedido_id=pedido.id)
-        else:
+    else:
             form = ConfirmacaoPedidoForm()
 
-        context = {
+    context = {
             'form' : form,
             'carrinho_itens' : carrinho_para_template,
             'total_carrinho' : total_carrinho,
             'cliente' : cliente,
         }
-        return render (request, 'checkout.html', context)
+
+    return render (request, 'checkout.html', context)
 
 @login_required
 def pedido_sucesso(request,pedido_id):
