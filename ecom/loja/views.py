@@ -98,7 +98,6 @@ def minha_conta_view(request):
         return redirect('home')
     
     status_em_andamento= ['aguardando', 'processando', 'enviado']
-
     status_anteriores = ['entregue', 'cancelado']
 
     pedidos_em_andamento = Pedido.objects.filter(
@@ -120,18 +119,18 @@ def minha_conta_view(request):
             profile_form.save()
             messages.success(request, 'Alterações salvas com sucesso!')
             return redirect('minha_conta')
-        else:
+    else:
             user_form = UserEditForm(instance=request.user)
             profile_form = ClienteProfileEditForm(instance=cliente)
 
-        context = {
-            'user_form' : user_form,
-            'profile_form' : profile_form,
-            'pedidos_em_andamento': pedidos_em_andamento,
-            'pedidos_anteriores': pedidos_anteriores,
-            'cliente' : cliente,
-        }
-        return render(request, 'registro_clientes/minha_conta.html', context)
+    context = {
+        'user_form' : user_form,
+        'profile_form' : profile_form,
+        'pedidos_em_andamento': pedidos_em_andamento,
+        'pedidos_anteriores': pedidos_anteriores,
+        'cliente' : cliente
+    }
+    return render(request, 'registration/minha_conta.html', context)
 
 
 

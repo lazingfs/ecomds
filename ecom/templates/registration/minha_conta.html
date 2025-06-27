@@ -86,24 +86,6 @@
 {# ========= FIM DO HTML DA NOTIFICAÇÃO ========= #}
 
 
-<div class="account{% block content %}
-
-{# ========= INÍCIO DO HTML DA NOTIFICAÇÃO ========= #}
-{% if messages %}
-    {% for message in messages %}
-        {% if message.tags == 'success' %}
-            <div id="success-overlay" class="success-overlay">
-                <div class="success-content">
-                    <span class="success-icon">&#10004;</span> {# Símbolo de "correto" #}
-                    <p>{{ message }}</p>
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
-{% endif %}
-{# ========= FIM DO HTML DA NOTIFICAÇÃO ========= #}
-
-
 <div class="account-container">
     <h1>Painel do Cliente</h1>
 
@@ -114,17 +96,8 @@
                 <div class="alert alert-{{ message.tags }}">{{ message }}</div>
             {% endif %}
         {% endfor %}
-    {% endif %}-container">
-    <h1>Painel do Cliente</h1>
-
-    {# Mensagens de erro ou aviso ainda podem aparecer aqui, se necessário #}
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags != 'success' %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endif %}
-        {% endfor %}
     {% endif %}
+    
 
     <div class="tabs">
         <button class="tab-button active" onclick="openTab(event, 'Perfil')">Meu Perfil</button>
@@ -210,7 +183,7 @@
     });
 </script>
     {# ========= FIM DO JAVASCRIPT DA NOTIFICAÇÃO ========= #}
-    
+
 <script>
     function openTab(evt, tabName) {
         // Pega todos os elementos com a classe "tab-content" e os esconde
