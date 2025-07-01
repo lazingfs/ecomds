@@ -35,21 +35,23 @@ class ClienteAdmin(admin.ModelAdmin):
 #---------------------ItemPedido(inline)---------------
 class ItemPedidoInline(admin.TabularInline):
     model = ItemPedido
-    extra = 0 #sem linhas vazias a serem adicionados
+    extra = 1 #sem linhas vazias a serem adicionados
     readonly_fields = ['subtotal'] #campo somente leitura
-    fields = ('produto', 'quantidade', 'subtortal', 'preco_unitario')
+    raw_id_fields = ['produto'] #campo que pode ser editado diretamente
 
 #--------------------------Pedido----------------------
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
     list_display = ['id', 'cliente', 'data_pedido', 'status', 'codigo_rastreamento']
     list_filter = ['status', 'data_pedido']
-    search_fields = ['id', 'cliente__user__username', 'cliente__razao_social']
+    search_fields = ['id', 'cliente__user__username', 'cliente__razao_social', 'codigo_rastreamento']
     ordering = ['-data_pedido']
     inlines = [ItemPedidoInline]
-
+    
     readonly_fields = ('cliente', 'data_pedido', 'total')
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related('itempedido_set__produto')
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('itens__produto', 'cliente__user')
+        return queryset
     

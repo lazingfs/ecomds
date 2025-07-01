@@ -136,7 +136,7 @@ def minha_conta_view(request):
 
 class PedidoDetailView(LoginRequiredMixin, DetailView):
     model = Pedido
-    template_name = 'pedido_detail.html'
+    template_name = 'pedido_detalhe.html'
     context_object_name = 'pedido'
     pk_url_kwarg = 'pk'
 
@@ -218,7 +218,7 @@ def checkout (request):
                    pedido=pedido,
                    produto=produto,
                    quantidade= quantidade_pedida,
-                   preco_unitario=produto.preco,
+                   preco_unitario=produto.preco
                 )
                produto.estoque  -= quantidade_pedida
                produto.save()

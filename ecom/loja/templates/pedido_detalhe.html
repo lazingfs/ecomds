@@ -1,1 +1,276 @@
-desnecessário no momento 
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Pedido #{{ pedido.id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilo geral do container */
+    .detail-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 40px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Cabeçalho do Pedido */
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #f0f2f5;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .order-header h1 {
+        font-size: 2em;
+        color: #1c1c1c;
+        margin: 0;
+    }
+    .order-status {
+        padding: 8px 16px;
+        font-weight: bold;
+        border-radius: 20px;
+        color: #fff;
+        background-color: #007bff; /* Padrão: Processando */
+    }
+    /* Cores de status dinâmicas */
+    .status-enviado { background-color: #ffc107; color: #000; }
+    .status-entregue { background-color: #28a745; }
+    .status-cancelado { background-color: #dc3545; }
+    .status-aguardando { background-color: #6c757d; }
+
+
+    /* Grid de Informações */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    .info-box h3 {
+        font-size: 1.2em;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .info-box p {
+        color: #555;
+        line-height: 1.6;
+    }
+
+    /* Código de Rastreamento Interativo */
+    .tracking-code {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 6px;
+    }
+    .tracking-code span {
+        font-weight: bold;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    .tracking-code button {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .tracking-code button:hover {
+        background: #0056b3;
+    }
+
+
+    /* Tabela de Itens */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .items-table th, .items-table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #f0f2f5;
+    }
+    .items-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+    .item-total {
+        font-weight: bold;
+    }
+
+
+    /* Total e Ações */
+    .order-summary {
+        text-align: right;
+        margin-top: 30px;
+    }
+    .order-summary .total-price {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #28a745;
+    }
+    .action-buttons {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .action-buttons a, .action-buttons button {
+        padding: 12px 25px;
+        border-radius: 6px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .back-link {
+        color: #007bff;
+        font-weight: bold;
+    }
+    .print-btn {
+        background-color: #6c757d;
+        color: white;
+    }
+    .print-btn:hover {
+        background-color: #5a6268;
+    }
+    
+    /* Estilos para Impressão */
+    @media print {
+        body * {
+            visibility: hidden; /* Esconde tudo */
+        }
+        .detail-container, .detail-container * {
+            visibility: visible; /* Mostra apenas o container do pedido */
+        }
+        .detail-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+        }
+        .action-buttons {
+            display: none; /* Esconde os botões na impressão */
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+
+    <header class="order-header">
+        <h1>Detalhes do Pedido #{{ pedido.id }}</h1>
+        <div class="order-status status-{{ pedido.status }}">
+            {{ pedido.get_status_display }}
+        </div>
+    </header>
+
+    <section class="info-grid">
+        <div class="info-box">
+            <h3>Endereço de Entrega</h3>
+            <p>
+                <strong>{{ pedido.cliente.user.get_full_name|default:pedido.cliente.user.username }}</strong><br>
+                {{ pedido.cliente.endereco|linebreaksbr }}<br>
+                Telefone: {{ pedido.cliente.telefone }}
+            </p>
+        </div>
+        <div class="info-box">
+            <h3>Resumo da Compra</h3>
+            <p><strong>Data:</strong> {{ pedido.data_pedido|date:"d/m/Y H:i" }}</p>
+            <p><strong>Rastreamento:</strong></p>
+            {% if pedido.codigo_rastreamento %}
+                <div class="tracking-code">
+                    <span id="trackingCode">{{ pedido.codigo_rastreamento }}</span>
+                    <button id="copyBtn">Copiar</button>
+                </div>
+            {% else %}
+                <span>Não disponível</span>
+            {% endif %}
+        </div>
+    </section>
+
+    <section>
+        <h3>Itens Comprados</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th style="text-align: center;">Qtd.</th>
+                    <th style="text-align: right;">Preço Unit.</th>
+                    <th style="text-align: right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pedido.itens.all %}
+                <tr>
+                    <td>{{ item.produto.nome }}</td>
+                    <td style="text-align: center;">{{ item.quantidade }}</td>
+                    <td style="text-align: right;">R$ {{ item.preco_unitario|floatformat:2 }}</td>
+                    <td style="text-align: right;" class="item-total">R$ {{ item.subtotal|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="order-summary">
+        <p class="total-price">Total do Pedido: R$ {{ pedido.total|floatformat:2 }}</p>
+    </section>
+
+    <footer class="action-buttons">
+        <a href="{% url 'minha_conta' %}" class="back-link">← Voltar para Meus Pedidos</a>
+        <button id="printBtn" class="print-btn">Imprimir Pedido</button>
+    </footer>
+
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- Lógica para Copiar Código de Rastreamento ---
+    const copyBtn = document.getElementById('copyBtn');
+    const trackingCodeEl = document.getElementById('trackingCode');
+
+    if (copyBtn && trackingCodeEl) {
+        copyBtn.addEventListener('click', function() {
+            const codeToCopy = trackingCodeEl.innerText;
+            navigator.clipboard.writeText(codeToCopy).then(function() {
+                // Feedback visual para o usuário
+                copyBtn.innerText = 'Copiado!';
+                setTimeout(function() {
+                    copyBtn.innerText = 'Copiar';
+                }, 2000); // Volta ao texto original após 2 segundos
+            }, function(err) {
+                console.error('Erro ao copiar código: ', err);
+            });
+        });
+    }
+
+    // --- Lógica para Imprimir o Pedido ---
+    const printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+        printBtn.addEventListener('click', function() {
+            window.print();
+        });
+    }
+
+});
+</script>
+{% endblock %}
