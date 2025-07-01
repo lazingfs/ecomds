@@ -88,46 +88,39 @@ class Cliente(models.Model):
     
 
 class Pedido(models.Model):
-    # --- NOVOS STATUS ---
-    STATUS_AGUARDANDO = 'aguardando'
-    STATUS_PROCESSANDO = 'processando'
-    STATUS_ENVIADO = 'enviado'
-    STATUS_ENTREGUE = 'entregue'
-    STATUS_CANCELADO = 'cancelado'
-
-    STATUS_CHOICES = [
-        (STATUS_AGUARDANDO, 'Aguardando Pagamento'),
-        (STATUS_PROCESSANDO, 'Processando'),
-        (STATUS_ENVIADO, 'Enviado'),
-        (STATUS_ENTREGUE, 'Entregue'),
-        (STATUS_CANCELADO, 'Cancelado'),
-    ]
-
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     data_pedido = models.DateTimeField(auto_now_add=True)
-    # finalizado = models.BooleanField(default=False) # <<< Podemos substituir este campo
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_AGUARDANDO) # <<< Por este
-    codigo_rastreamento = models.CharField(max_length=50, blank=True, null=True)
+
+    STATUS_CHOICES = [
+        ('aguardando', 'Aguardando Pagamento'),
+        ('processando', 'Processando'),
+        ('enviado', 'Enviado'),
+        ('entregue', 'Entregue'),
+        ('cancelado', 'Cancelado'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='aguardando')
+    codigo_rastreamento = models.CharField(max_length=100, blank=True , null=True)
 
     def __str__(self):
-        return f'Pedido {self.id} - {self.cliente}'
-
+        return f"Pedido {self.id} - {self.cliente.user.username}"
+    
     @property
     def total(self):
-        # Calcula o total do pedido somando os subtotais dos itens
-        return sum(item.subtotal for item in self.itempedido_set.all())
+        return sum(item.subtotal for item in self.itens.all())
+    
     
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='itens')
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
-    quantidade = models.PositiveIntegerField()
+    quantidade = models.PositiveIntegerField(default=1)
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self):
+        return f"{self.quantidade} x {self.produto.nome} (Pedido {self.pedido.id})"
+    
+    @property
     def subtotal(self):
         return self.quantidade * self.preco_unitario
-
-    def __str__(self):
-        return f'{self.quantidade}x {self.produto.nome}'
 
     
 

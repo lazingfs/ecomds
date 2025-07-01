@@ -132,23 +132,35 @@ def minha_conta_view(request):
     }
     return render(request, 'registration/minha_conta.html', context)
 
+#------------------Detalhe de visualização do pedido---------------------
 
+class PedidoDetailView(LoginRequiredMixin, DetailView):
+    model = Pedido
+    template_name = 'pedido_detail.html'
+    context_object_name = 'pedido'
+    pk_url_kwarg = 'pk'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
 
-           
+        return queryset.filter(cliente__user=self.request.user)
+    
+#------------------------Histórico de pedidos do cliente------------------------
 
-           
+class PedidoListView(LoginRequiredMixin, ListView):
+    model = Pedido
+    template_name = 'pedido_list.html'
+    context_object_name = 'pedidos'
+    paginate_by = 10
 
-
-
-
-
-
-
-
-
+    def get_queryset(self):
+        
+        if hasattr(self.request.user, 'cliente'):
+            return Pedido.objects.filter(cliente=self.request.user.cliente).order_by('-data_pedido')
+        return Pedido.objects.none()
 
 #------------------ Pedidos do cliente logado---------------------
+
 @login_required
 @transaction.atomic
 
@@ -366,17 +378,8 @@ def remover_do_carrinho(request, produto_id): # produto_id vem da URL
     return redirect('carrinho_detalhe')
 
 
-#------------------------Histórico de pedidos do cliente------------------------
 
-class PedidoListView(LoginRequiredMixin, ListView):
-    model = Pedido
-    template_name = 'pedido_list.html'
-    context_object_name = 'pedidos'
-    paginate_by = 10
+    
 
-    def get_queryset(self):
-        
-        if hasattr(self.request.user, 'cliente'):
-            return Pedido.objects.filter(cliente=self.request.user.cliente).order_by('-data_pedido')
-        return Pedido.objects.none()
+
         

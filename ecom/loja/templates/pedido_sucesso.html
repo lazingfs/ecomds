@@ -1,1 +1,97 @@
-PEDIDO REALIZADO!
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pedido Realizado com Sucesso{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 80px 20px;
+        text-align: center;
+        min-height: 70vh; /* Faz o container ocupar boa parte da tela */
+    }
+
+    .success-card {
+        background-color: #ffffff;
+        padding: 50px 60px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+        border-top: 5px solid #28a745; /* Uma borda verde no topo para indicar sucesso */
+    }
+
+    .success-icon {
+        font-size: 72px;
+        color: #28a745; /* Verde de sucesso */
+        margin-bottom: 25px;
+        line-height: 1;
+    }
+
+    .success-card h1 {
+        font-size: 2.5em;
+        color: #333;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .success-card p {
+        font-size: 1.2em;
+        color: #555;
+        margin-bottom: 40px;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px; /* Espaçamento entre os botões */
+        flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas menores */
+    }
+
+    .btn-custom {
+        padding: 12px 25px;
+        border-radius: 6px;
+        font-size: 1em;
+        text-decoration: none;
+        color: #fff;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-principal {
+        background-color: #007bff; /* Azul primário do seu projeto */
+    }
+
+    .btn-principal:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secundario {
+        background-color: #6c757d; /* Cinza secundário */
+    }
+
+    .btn-secundario:hover {
+        background-color: #5a6268;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-icon">
+            &#10004; </div>
+        <h1>Pedido Realizado com Sucesso!</h1>
+        <p>Obrigado pela sua compra. Recebemos o seu pedido e ele já está sendo processado. Você pode acompanhar o status a qualquer momento na sua área de cliente.</p>
+        <div class="button-group">
+            <a href="{% url 'index' %}" class="btn-custom btn-principal">Ir para a Página Principal</a>
+            <a href="{% url 'minha_conta' %}" class="btn-custom btn-secundario">Acompanhar Meus Pedidos</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
