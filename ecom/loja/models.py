@@ -113,14 +113,17 @@ class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='itens')
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.PositiveIntegerField(default=1)
-    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return f"{self.quantidade} x {self.produto.nome} (Pedido {self.pedido.id})"
     
     @property
     def subtotal(self):
-        return self.quantidade * self.preco_unitario
+        if self.preco_unitario is None:
+            return 0
+        return self.quantidade * self.preco_unitario 
+    
 
     
 
