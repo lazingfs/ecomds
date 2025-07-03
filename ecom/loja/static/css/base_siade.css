@@ -71,25 +71,19 @@ a:hover {
 
 /* --- Estilo para o Botão de Logout --- */
 /* Esta classe faz o botão 'Sair' se parecer exatamente como um link de navegação */
-.nav-logout-button {
-    background: none;
-    border: none;
-    padding: 8px 12px;
-    margin: 0;
-    font-family: inherit; /* Herda a fonte do corpo */
-    font-size: 1rem;       /* Mesmo tamanho da fonte dos outros links */
-    font-weight: 500;
-    color: #343a40;
-    cursor: pointer;
-    text-align: left;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.nav-logout-button:hover {
-    background-color: #e9ecef;
-    color: #0056b3;
-    text-decoration: none;
-}
+.logout-link {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        color: var(--secondary-color); /* Usa a mesma cor dos outros links */
+        font-weight: 500;
+        font-family: inherit;
+        font-size: inherit;
+    }
+    .logout-link:hover {
+        color: var(--primary-color); /* Efeito hover igual aos outros links */
+    }
 
 
 /* --- Conteúdo Principal --- */

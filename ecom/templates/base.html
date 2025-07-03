@@ -160,18 +160,25 @@
         </div>
 
         <nav class="header-nav">
-            <ul>
-                <li><a href="{% url 'produto_list' %}">Produtos</a></li>
-                <li><a href="{% url 'carrinho_detalhe' %}">Carrinho</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'minha_conta' %}">Minha Conta</a></li>
-                    <li><a href="{% url 'logout' %}">Sair</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Entrar</a></li>
-                    <li><a href="{% url 'register' %}">Registrar</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+    <ul>
+        <li><a href="{% url 'produto_list' %}">Produtos</a></li>
+        <li><a href="{% url 'carrinho_detalhe' %}">Carrinho</a></li>
+        
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'minha_conta' %}">Minha Conta</a></li>
+            
+            <li>
+                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <a href="#" onclick="document.getElementById('logout-form').submit();" class="logout-link">Sair</a>
+                </form>
+            </li>
+            {% else %}
+            <li><a href="{% url 'login' %}">Entrar</a></li>
+            <li><a href="{% url 'register' %}">Registrar</a></li>
+        {% endif %}
+    </ul>
+</nav>
         </header>
 
     <main>
