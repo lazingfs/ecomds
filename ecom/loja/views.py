@@ -7,6 +7,7 @@ from django import forms
 from django.db import transaction
 from django.db.models import Q
 from django.contrib import messages
+from django.http import JsonResponse
 from decimal import Decimal
 from .forms import ConfirmacaoPedidoForm, CustomUserCreationForm, ClienteProfileForm, UserEditForm, ClienteProfileEditForm
 from .models import Produto, Categoria, Cliente, Pedido, ItemPedido
@@ -377,6 +378,49 @@ def remover_do_carrinho(request, produto_id): # produto_id vem da URL
 
     return redirect('carrinho_detalhe')
 
+#------------------ Pesquisa de produtos ---------------------
+def pesquisa_view(request): 
+    query = request.GET.get('q', '').strip()
+    resultados = []
+    if query:
+        resultados = Produto.objects.filter(
+            Q(nome__icontains=query) | Q(descricao__icontains=query)
+        ).distinc()
+        
+        context = {
+            'query' : query,
+            'resultados' : resultados,
+        }
+        return render (request, 'loja/pesquisa.html', context)
+    
+def produto_api_list(request):
+    produtos = Produto.objects.filter(disponivel=True).order_by('nome')
+    data = []
+
+    for produto in produtos:
+        try:
+            
+            imagem_url = ''
+            if produto.imagem:
+                imagem_url = request.build_absolute_uri(produto.imagem.url)
+
+            
+            produto_url = request.build_absolute_uri(produto.get_absolute_url())
+
+            
+            item = {
+                'nome': produto.nome,
+                'url': produto_url,
+                'imagem_url': imagem_url
+            }
+            data.append(item)
+
+        except Exception as e:
+            
+            print(f"Erro ao processar o produto '{produto.nome}' para a API: {e}")
+            continue
+        
+    return JsonResponse(data, safe=False) 
 
 
     

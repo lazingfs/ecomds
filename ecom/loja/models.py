@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 
@@ -32,6 +33,7 @@ class Produto(models.Model):
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     estoque = models.PositiveIntegerField(default=0)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name= 'produtos')
+    disponivel = models.BooleanField(default=True)
     imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -46,6 +48,9 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+    
+    def get_absolute_url(self):
+        return reverse('produto_detalhe', args={'slug': self.slug})
     
 class Cliente(models.Model):
     TIPO_PESSOA_FISICA = 'PF'
@@ -123,6 +128,9 @@ class ItemPedido(models.Model):
         if self.preco_unitario is None:
             return 0
         return self.quantidade * self.preco_unitario 
+
+
+    
     
 
     

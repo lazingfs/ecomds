@@ -2,6 +2,8 @@ from django.urls import path, include
 
 
 from .views import  (
+    produto_api_list,
+    pesquisa_view,
     PedidoDetailView,
     PedidoListView,
     minha_conta_view,
@@ -42,6 +44,11 @@ urlpatterns = [
 
     path('contas/', include('django.contrib.auth.urls')),
     path('contas/registrar/', register_view, name='register'),
-    path('contas/minha-conta/', minha_conta_view, name='minha_conta')
+    path('contas/minha-conta/', minha_conta_view, name='minha_conta'),
+
+    path ('api/produtos/', produto_api_list, name='api_produtos'),
+    path('pesquisa/', pesquisa_view, name='pesquisa'), #Pesquisa de produtos
+
+]
     
-]   
+ 

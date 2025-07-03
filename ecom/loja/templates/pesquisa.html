@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Resultados da Pesquisa por "{{ query }}"{% endblock %}
+
+{% block content %}
+<div class="container search-results-container">
+    <div class="search-header">
+        {% if query %}
+            <h1>Resultados para: <span>"{{ query }}"</span></h1>
+            <p>{{ resultados|length }} produto(s) encontrado(s).</p>
+        {% else %}
+            <h1>Por favor, digite um termo para pesquisar.</h1>
+        {% endif %}
+    </div>
+
+    {% if resultados %}
+        <div class="product-grid">
+            {% for produto in resultados %}
+                <div class="product-card">
+                    <a href="{% url 'produto_detalhe' produto.slug %}">
+                        {% if produto.imagem %}
+                            <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                        {% endif %}
+                        <div class="product-info">
+                            <h3>{{ produto.nome }}</h3>
+                            <p class="product-price">R$ {{ produto.preco|floatformat:2 }}</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% elif query %}
+        <div class="no-results">
+            <p>Nenhum produto corresponde à sua busca. Tente um termo diferente.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilos da página de produtos reutilizados */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 30px;
+        padding: 20px;
+    }
+    .product-card {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .product-card a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .product-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    .product-info {
+        padding: 20px;
+    }
+    .product-info h3 {
+        font-size: 1.2em;
+        margin: 0 0 10px 0;
+    }
+    .product-price {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    /* Estilos do cabeçalho da busca */
+    .search-results-container {
+        padding: 40px;
+    }
+    .search-header h1 {
+        font-size: 2.5em;
+        margin-bottom: 5px;
+    }
+    .search-header h1 span {
+        color: var(--primary-color);
+    }
+    .search-header p {
+        font-size: 1.2em;
+        color: #6c757d;
+        margin-bottom: 40px;
+    }
+    .no-results {
+        text-align: center;
+        padding: 50px;
+        font-size: 1.2em;
+        color: #555;
+    }
+</style>
+{% endblock %}
