@@ -50,7 +50,7 @@ class Produto(models.Model):
         return self.nome
     
     def get_absolute_url(self):
-        return reverse('produto_detalhe', args={'slug': self.slug})
+        return reverse('produto_detalhe', args=[self.slug])
     
 class Cliente(models.Model):
     TIPO_PESSOA_FISICA = 'PF'
