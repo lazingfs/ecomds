@@ -15,7 +15,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-    color: #007bff;
+    color: #15ff00;
     text-decoration: none;
 }
 
@@ -65,7 +65,7 @@ a:hover {
 
 .main-nav a:hover {
     background-color: #e9ecef;
-    color: #0056b3;
+    color: #15b300;
     text-decoration: none;
 }
 
@@ -106,7 +106,7 @@ a:hover {
 .button {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #007bff; /* Azul primário */
+    background-color: #00ff22; /* Azul primário */
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -117,6 +117,6 @@ a:hover {
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #00b30f;
     text-decoration: none;
 }
