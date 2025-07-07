@@ -54,17 +54,12 @@ class ClienteProfileForm(forms.ModelForm):
 
        #------------------------edição para conta cliente------------------------
 class UserEditForm(forms.ModelForm):
-   class Meta: 
-      model = User
-      fields = ['first_name', 'last_name', 'email']
-      labels = {
-         'first_name': 'Nome',
-         'last_name': 'Sobrenome',
-         'email': 'E-mail de contato',
-      }
-      help_texts = { 
-         'email': 'Este e-mail será usado para comunicação de recuperação de senha.'
-      }
+    first_name = forms.CharField(label='Nome', required=True)
+    last_name = forms.CharField(label='Sobrenome', required=True)
+    
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email']
 
 class ClienteProfileEditForm(forms.ModelForm):
    

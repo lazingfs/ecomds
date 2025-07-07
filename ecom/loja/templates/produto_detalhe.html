@@ -1,12 +1,38 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block title %}{{ produto.nome }} - Distribuidora Siade{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/produto_detalhe.css' %}">
+    <style>
+        :root {
+            --primary-color: #198754;
+            --primary-hover: #157347;
+        }
+        .add-to-cart-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .add-to-cart-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .product-category a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .product-category a:hover {
+            text-decoration: underline;
+        }
+    </style>
 {% endblock %}
+
 {% block content %}
     <div class="product-detail-container">
         <div class="product-image-area">
@@ -18,17 +44,18 @@
         </div>
         <div class="product-info-area">
             <h1>{{ produto.nome }}</h1>
-            <p class="product-category">Categoria: <a href="{% url 'produtos_por_categoria' produto.categoria.slug %}">{{ produto.categoria.nome }}</a></p>
-            <p class="product-description">{{ produto.descricao }}</p>
+            <p class="product-category">Categoria: <a href="{% url 'categoria_produto_list' produto.categoria.slug %}">{{ produto.categoria.nome }}</a></p>
+            
+            <p class="product-description">{{ produto.descricao|linebreaks }}</p>
             <p class="product-price">R$ {{ produto.preco }}</p>
             
             {% if produto.estoque > 0 %}
                 <p class="in-stock">Em estoque: {{ produto.estoque }} unidades</p>
                 
-                <form action="{% url 'adicionar_ao_carrinho' %}" method="post"> 
+                <form action="{% url 'adicionar_ao_carrinho' produto.id %}" method="post"> 
                     {% csrf_token %}
                     <label for="quantidade">Quantidade:</label>
-                    <input type="number" id="quantidade" name="quantidade" value="1" min="1" max="{{ produto.estoque }}">
+                    <input type="number" id="quantidade" name="quantidade" value="1" min="1" max="{{ produto.estoque }}" style="width: 70px; padding: 8px;">
                     <input type="hidden" name="produto_id" value="{{ produto.id }}"> 
                     <button type="submit" class="add-to-cart-btn">Adicionar ao Carrinho</button>
                 </form>
@@ -42,4 +69,3 @@
         </div>
     </div>
 {% endblock %}
-

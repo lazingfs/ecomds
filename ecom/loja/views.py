@@ -261,36 +261,42 @@ class AdicionarAoCarrinhoForm(forms.Form):
     quantidade = forms.IntegerField(min_value=1)
     produto_id = forms.IntegerField(widget=forms.HiddenInput())
 
-def adicionar_ao_carrinho(request):
-    if request.method == 'POST':
-        form = AdicionarAoCarrinhoForm(request.POST)
-        if form.is_valid():
-            produto_id = str(form.cleaned_data['produto_id'])
-            quantidade = form.cleaned_data['quantidade']
+def adicionar_ao_carrinho(request, produto_id):
+    produto = get_object_or_404(Produto, id=produto_id)
+    carrinho = request.session.get('carrinho', {})
+    produto_id_str = str(produto_id)
 
-            produto = get_object_or_404(Produto, id=produto_id)
+    # --- INÍCIO DA ATUALIZAÇÃO ---
+    # Pega a quantidade do formulário. Se não for enviada, assume 1.
+    quantidade_a_adicionar = int(request.POST.get('quantidade', 1))
+    # --- FIM DA ATUALIZAÇÃO ---
 
-            carrinho = request.session.get('carrinho', {})
+    # Verifica o estoque
+    quantidade_atual_carrinho = carrinho.get(produto_id_str, {}).get('quantidade', 0)
+    estoque_necessario = quantidade_atual_carrinho + quantidade_a_adicionar
 
-            if produto_id in carrinho:
-                carrinho [produto_id]['quantidade'] += quantidade
-            else:
-                carrinho[produto_id] = {
-                    'quantidade': quantidade,
-                    'preco': str(produto.preco),
-                    'nome': produto.nome,
-                    'imagem_url': produto.imagem.url if produto.imagem else '',
-                    'slug': produto.slug,
-                
-                }
+    if produto.estoque < estoque_necessario:
+        messages.error(request, f"Estoque insuficiente para a quantidade desejada de '{produto.nome}'.")
+        return redirect('produto_detalhe', slug=produto.slug)
 
-            request.session['carrinho'] = carrinho
-            request.session.modified = True
-            messages.success(request, f'{produto.nome} adicionado ao carrinho.') # Adiciona mensagem de sucesso
-            
+    # Adiciona ou atualiza o produto no carrinho
+    if produto_id_str in carrinho:
+        carrinho[produto_id_str]['quantidade'] += quantidade_a_adicionar
+    else:
+        carrinho[produto_id_str] = {
+            'quantidade': quantidade_a_adicionar,
+            'preco': str(produto.preco),
+            'nome': produto.nome,
+            'imagem_url': produto.imagem.url if produto.imagem else '',
+            'slug': produto.slug
+        }
 
-            return redirect('carrinho_detalhe')
-    return redirect('index')
+    request.session['carrinho'] = carrinho
+    request.session.modified = True
+    
+    messages.success(request, f'{quantidade_a_adicionar}x "{produto.nome}" foi(ram) adicionado(s) ao seu carrinho.')
+    return redirect('carrinho_detalhe')  
+    
 
 def carrinho_detalhe(request):
     carrinho = request.session.get('carrinho', {}) 
@@ -321,62 +327,63 @@ def carrinho_detalhe(request):
         'total_carrinho': total_carrinho,
     })
 
-def atualizar_quantidade_carrinho(request):
-    if request.method == 'POST':
-        produto_id_str = request.POST.get('produto_id')
-        try:
-            nova_quantidade = int(request.POST.get('quantidade'))
-        except (ValueError, TypeError):
-            messages.error(request, "Quantidade inválida.")
-            return redirect('carrinho_detalhe')
-
-        if not produto_id_str or nova_quantidade is None:
-            messages.error(request, "Dados inválidos para atualização.")
-            return redirect('carrinho_detalhe')
-
-        carrinho = request.session.get('carrinho', {})
-
-        if produto_id_str in carrinho:
-            try:
-                produto = Produto.objects.get(id=int(produto_id_str))
-            except Produto.DoesNotExist:
-                messages.error(request, "Produto não encontrado.")
-                # Remover do carrinho se o produto não existe mais no DB
-                del carrinho[produto_id_str]
-                request.session.modified = True
-                return redirect('carrinho_detalhe')
-
-            if nova_quantidade > 0:
-                if nova_quantidade <= produto.estoque:
-                    carrinho[produto_id_str]['quantidade'] = nova_quantidade
-                    messages.success(request, f"Quantidade de {produto.nome} atualizada.")
-                else:
-                    messages.error(request, f"Estoque insuficiente para {produto.nome}. Disponível: {produto.estoque}.")
-            elif nova_quantidade == 0: # Se a quantidade for 0, remove o item
-                del carrinho[produto_id_str]
-                messages.success(request, f"{carrinho[produto_id_str]['nome']} removido do carrinho.")
-            else: # Quantidade negativa não é permitida
-                messages.error(request, "Quantidade não pode ser negativa.")
-            
-            request.session.modified = True
-        else:
-            messages.error(request, "Produto não encontrado no carrinho.")
-
-    return redirect('carrinho_detalhe')
-
-def remover_do_carrinho(request, produto_id): # produto_id vem da URL
+def atualizar_quantidade_carrinho(request, produto_id, nova_quantidade):
     carrinho = request.session.get('carrinho', {})
-    produto_id_str = str(produto_id) # Garante que é string para a chave da sessão
+    produto_id_str = str(produto_id)
 
-    if produto_id_str in carrinho:
-        nome_produto = carrinho[produto_id_str].get('nome', 'Produto')
+    if request.method == 'POST':
+        try:
+            produto = Produto.objects.get(id=produto_id_str)
+            quantidade = int(nova_quantidade)
+
+            if quantidade > 0 and produto.estoque >= quantidade:
+                carrinho[produto_id_str]['quantidade'] = quantidade
+                request.session['carrinho'] = carrinho
+                request.session.modified = True
+                
+                # Recalcula os totais para enviar de volta ao frontend
+                item_subtotal = produto.preco * quantidade
+                
+                total_carrinho = Decimal('0.00')
+                for pid, item in carrinho.items():
+                    prod = Produto.objects.get(id=pid)
+                    total_carrinho += prod.preco * item['quantidade']
+                
+                return JsonResponse({
+                    'success': True, 
+                    'item_subtotal': f'{item_subtotal:.2f}',
+                    'cart_total': f'{total_carrinho:.2f}'
+                })
+            else:
+                 return JsonResponse({'success': False, 'error': 'Quantidade inválida ou estoque insuficiente.'})
+
+        except (Produto.DoesNotExist, ValueError):
+            return JsonResponse({'success': False, 'error': 'Produto ou quantidade inválidos.'})
+    
+    return JsonResponse({'success': False, 'error': 'Requisição inválida.'})
+
+
+def remover_do_carrinho(request, produto_id):
+    carrinho = request.session.get('carrinho', {})
+    produto_id_str = str(produto_id)
+
+    if request.method == 'POST' and produto_id_str in carrinho:
         del carrinho[produto_id_str]
+        request.session['carrinho'] = carrinho
         request.session.modified = True
-        messages.success(request, f'{nome_produto} foi removido do carrinho.')
-    else:
-        messages.warning(request, 'Produto não encontrado no carrinho.')
 
-    return redirect('carrinho_detalhe')
+        # Recalcula o total do carrinho
+        total_carrinho = Decimal('0.00')
+        for pid, item in carrinho.items():
+            try:
+                prod = Produto.objects.get(id=pid)
+                total_carrinho += prod.preco * item['quantidade']
+            except Produto.DoesNotExist:
+                continue
+
+        return JsonResponse({'success': True, 'cart_total': f'{total_carrinho:.2f}'})
+
+    return JsonResponse({'success': False, 'error': 'Não foi possível remover o item.'})
 
 #------------------ Pesquisa de produtos ---------------------
 def pesquisa_view(request): 

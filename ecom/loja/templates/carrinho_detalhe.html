@@ -1,121 +1,328 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Seu Carrinho - Distribuidora Siade{% endblock %}
+{% block title %}Meu Carrinho de Compras{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/carrinho_detalhe.css' %}">
-    <style>
-        .carrinho-tabela {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+<style>
+    :root {
+        --primary-color: #198754; /* Nosso verde */
+        --primary-hover: #157347;
+        --secondary-text: #6c757d;
+        --light-bg: #f8f9fa;
+        --border-color: #dee2e6;
+    }
+
+    .cart-page-title {
+        font-size: 2.5em;
+        font-weight: 600;
+        color: #1c1c1c;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .cart-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+
+    .cart-items {
+        background: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-image img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .item-details {
+        flex-grow: 1;
+    }
+    .item-details h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.2em;
+    }
+    .item-details .item-price {
+        color: var(--secondary-text);
+        font-size: 0.9em;
+    }
+
+    .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .quantity-input {
+        width: 60px;
+        padding: 8px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+    }
+    
+    .remove-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 1.4em;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .item-subtotal {
+        min-width: 100px;
+        text-align: right;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    /* Resumo do Pedido */
+    .order-summary {
+        background: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 120px; /* Leva em conta a altura do header */
+    }
+    .order-summary h2 {
+        margin-top: 0;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 15px;
+    }
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #333;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+    .checkout-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: var(--primary-color);
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        font-size: 1.2em;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.2s;
+    }
+    .checkout-btn:hover {
+        background-color: var(--primary-hover);
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 60px;
+        background: #fff;
+        border-radius: 8px;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 992px) {
+        .cart-container {
+            grid-template-columns: 1fr;
         }
-        .carrinho-tabela th, .carrinho-tabela td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-            vertical-align: middle;
-        }
-        .carrinho-tabela th {
-            background-color: #f2f2f2;
-            color: #333;
-        }
-        .carrinho-tabela img {
-            max-width: 80px;
-            height: auto;
-            border-radius: 4px;
-        }
-        .produto-info {
-            display: flex;
-            align-items: center;
-        }
-        .produto-info div {
-            margin-left: 15px;
-        }
-        .acoes-form {
-            display: flex;
-            align-items: center;
-        }
-        .acoes-form input[type="number"] {
-            width: 60px;
-            margin-right: 5px;
-        }
-        .carrinho-rodape {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-        .carrinho-total-texto {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #006400;
-        }
-    </style>
+    }
+
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="carrinho-container">
-    <h1 class="carrinho-header">Seu Carrinho de Compras</h1>
 
-    {% if messages %}
-        {% endif %}
+<h1 class="cart-page-title">Meu Carrinho</h1>
 
-    {% if carrinho %}
-    <table class="carrinho-tabela">
-        <thead>
-            <tr>
-                <th colspan="2">Produto</th>
-                <th>Preço Unitário</th>
-                <th>Quantidade</th>
-                <th>Subtotal</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for produto_id, item in carrinho.items %}
-            <tr>
-                <td>
-                    <a href="{% url 'produto_detalhe' item.slug %}">
-                        <img src="{{ item.imagem_url|default_if_none:'' }}{% if not item.imagem_url %}{% static 'img/placeholder.png' %}{% endif %}" alt="{{ item.nome }}">
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'produto_detalhe' item.slug %}">{{ item.nome }}</a>
-                </td>
-                <td>R$ {{ item.preco|floatformat:2 }}</td>
-                <td>
-                    <form class="acoes-form" action="{% url 'atualizar_quantidade_carrinho' %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="produto_id" value="{{ produto_id }}">
-                        <input type="number" name="quantidade" value="{{ item.quantidade }}" min="0" {% if item.produto_obj %}max="{{ item.produto_obj.estoque }}"{% endif %} aria-label="Quantidade">
-                        <button type="submit" class="btn-atualizar" title="Atualizar quantidade">&#x21bb;</button> {# Símbolo de recarregar #}
-                    </form>
-                </td>
-                <td>R$ {{ item.subtotal|floatformat:2 }}</td>
-                <td>
-                    <a href="{% url 'remover_do_carrinho' produto_id=produto_id %}" class="btn-remover" title="Remover item">Remover</a>
-                </td>
-            </tr>
+{% if carrinho_itens %}
+<div class="cart-container">
+    <div class="cart-items">
+        {% for produto_id, item in carrinho_itens.items %}
+        <div class="cart-item" id="item-{{ produto_id }}">
+            <div class="item-image">
+                <img src="{{ item.imagem_url|default:'/static/img/placeholder.png' }}" alt="{{ item.nome }}">
+            </div>
+            <div class="item-details">
+                <h3>{{ item.nome }}</h3>
+                <p class="item-price">R$ {{ item.preco|floatformat:2 }}</p>
+            </div>
+            <div class="item-actions">
+                <input type="number" 
+                       class="quantity-input" 
+                       value="{{ item.quantidade }}" 
+                       min="1"
+                       data-produto-id="{{ produto_id }}"
+                       aria-label="Quantidade de {{ item.nome }}">
+                <button class="remove-btn" 
+                        data-produto-id="{{ produto_id }}"
+                        title="Remover item">&#10005;</button>
+            </div>
+            <div class="item-subtotal" id="subtotal-{{ produto_id }}">
+                R$ {{ item.subtotal|floatformat:2 }}
+            </div>
+        </div>
         {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="carrinho-rodape">
-        <div class="carrinho-total-texto">
-            Total: R$ {{ total_carrinho|floatformat:2 }}
-        </div>
-        <div class="carrinho-acoes-finais">
-            <a href="{% url 'produto_list' %}" class="button" style="background-color: #5a6268; margin-right: 10px;">Continuar Comprando</a>
-            <a href="{% url 'checkout' %}" class="button" style="background-color: #006400;">Finalizar Compra</a>
-        </div>
     </div>
 
-    {% else %}
-        <p class="carrinho-vazio">Seu carrinho está vazio.</p>
-    {% endif %}
+    <div class="order-summary">
+        <h2>Resumo do Pedido</h2>
+        <div class="summary-line">
+            <span>Subtotal</span>
+            <span id="summary-subtotal">R$ {{ total_carrinho|floatformat:2 }}</span>
+        </div>
+        <div class="summary-line">
+            <span>Frete</span>
+            <span>A calcular</span>
+        </div>
+        <div class="summary-total">
+            <span>Total</span>
+            <span id="summary-total">R$ {{ total_carrinho|floatformat:2 }}</span>
+        </div>
+        <form action="{% url 'checkout' %}" method="post">
+             {% csrf_token %}
+            <button type="submit" class="checkout-btn">Finalizar Compra</button>
+        </form>
+    </div>
 </div>
+{% else %}
+<div class="empty-cart">
+    <h2>Seu carrinho está vazio.</h2>
+    <p>Adicione produtos para vê-los aqui.</p>
+    <a href="{% url 'produto_list' %}" class="checkout-btn" style="display: inline-block; width: auto;">Ver Produtos</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const csrftoken = getCookie('csrftoken');
+
+    // Função para pegar o CSRF token (necessário para POST)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Atualizar quantidade
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const produtoId = this.dataset.produtoId;
+            const quantidade = this.value;
+            updateCartItem(produtoId, quantidade);
+        });
+    });
+
+    // Remover item
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja remover este item?')) {
+                const produtoId = this.dataset.produtoId;
+                removeCartItem(produtoId);
+            }
+        });
+    });
+
+    async function updateCartItem(produtoId, quantidade) {
+        const url = `/atualizar/${produtoId}/${quantidade}/`;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                // Atualiza o subtotal do item e os totais do carrinho na tela
+                document.getElementById(`subtotal-${produtoId}`).innerText = `R$ ${data.item_subtotal}`;
+                document.getElementById('summary-subtotal').innerText = `R$ ${data.cart_total}`;
+                document.getElementById('summary-total').innerText = `R$ ${data.cart_total}`;
+            } else {
+                alert(data.error || 'Não foi possível atualizar o item.');
+                location.reload(); // Recarrega para refletir o estado real
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Ocorreu um erro de comunicação.');
+        }
+    }
+    
+    async function removeCartItem(produtoId) {
+        const url = `/remover/${produtoId}/`;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove a linha do item da tela
+                document.getElementById(`item-${produtoId}`).remove();
+                
+                // Atualiza os totais
+                document.getElementById('summary-subtotal').innerText = `R$ ${data.cart_total}`;
+                document.getElementById('summary-total').innerText = `R$ ${data.cart_total}`;
+
+                // Se o carrinho ficou vazio, mostra a mensagem
+                if (data.cart_total === "0.00") {
+                    location.reload();
+                }
+
+            } else {
+                alert(data.error || 'Não foi possível remover o item.');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Ocorreu um erro de comunicação.');
+        }
+    }
+});
+</script>
 {% endblock %}
