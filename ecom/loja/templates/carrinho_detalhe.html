@@ -212,6 +212,7 @@
             <span>Total</span>
             <span id="summary-total">R$ {{ total_carrinho|floatformat:2 }}</span>
         </div>
+         <a href="{% url 'produto_list' %}" class="checkout-btn">Continuar Compra</a>
         <form action="{% url 'checkout' %}" method="post">
              {% csrf_token %}
             <button type="submit" class="checkout-btn">Finalizar Compra</button>
