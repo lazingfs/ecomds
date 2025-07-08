@@ -168,14 +168,13 @@ class PedidoListView(LoginRequiredMixin, ListView):
 def checkout (request):
     carrinho_sessao = request.session.get('carrinho', {})
     if not carrinho_sessao:
-        messages.warning(request, 'Seu carrinho está vazio.')
+        messages.warning(request, 'Seu carrinho.')
         return redirect('carrinho_detalhe')
     
     try:
         cliente = request.user.cliente
     except Cliente.DoesNotExist:
-        #FUTURAMENTE SERÁ FEITA A PÁGINA DE CADASTRO DO CLIENTE
-        #TERA UM REDIRECIONAMENTO PARA A PÁGINA DE CADASTRO
+        
         messages.error(request, 'Você precisa ser um cliente cadastrado para fazer um pedido.')
         #return redirect('cadastro_cliente')  # Redirecionar para a página de cadastro do cliente
     total_carrinho = Decimal('0.00')
@@ -266,11 +265,8 @@ def adicionar_ao_carrinho(request, produto_id):
     carrinho = request.session.get('carrinho', {})
     produto_id_str = str(produto_id)
 
-    # --- INÍCIO DA ATUALIZAÇÃO ---
-    # Pega a quantidade do formulário. Se não for enviada, assume 1.
     quantidade_a_adicionar = int(request.POST.get('quantidade', 1))
-    # --- FIM DA ATUALIZAÇÃO ---
-
+   
     # Verifica o estoque
     quantidade_atual_carrinho = carrinho.get(produto_id_str, {}).get('quantidade', 0)
     estoque_necessario = quantidade_atual_carrinho + quantidade_a_adicionar
@@ -299,33 +295,39 @@ def adicionar_ao_carrinho(request, produto_id):
     
 
 def carrinho_detalhe(request):
-    carrinho = request.session.get('carrinho', {}) 
+    carrinho_sessao = request.session.get('carrinho', {})
+
+    carrinho_para_template = {}
     total_carrinho = Decimal('0.00')
 
-    for produto_id, item in carrinho.items():
-        try:
-            preco = Decimal(item.get('preco', '0.00'))
-            quantidade = item.get('quantidade', 0)
-            
-            subtotal = preco * quantidade
-            item['subtotal'] = subtotal 
-            
+    produtos_ids = carrinho_sessao.keys()
+    prdoutos_no_banco = Produto.objects.filter(id__in=produtos_ids)
+
+    mapa_produtos = {str(produto.id): produto for produto in prdoutos_no_banco}
+
+    for produto_id, item_data in carrinho_sessao.items():
+        produto = mapa_produtos.get(produto_id)
+
+        if produto:
+            quantidade = item_data.get('quantidade')
+            subtotal = produto.preco * quantidade
+
+            carrinho_para_template[produto_id] = {
+                'quantidade': quantidade,
+                'preco': produto.preco,
+                'nome': produto.nome,
+                'imagem_url': produto.imagem.url if produto.imagem else '',
+                'slug': produto.slug,
+                'subtotal': subtotal,
+            }
             total_carrinho += subtotal
 
-            try:
-                produto_obj = Produto.objects.get(id=int(produto_id))
-                item['produto_obj'] = produto_obj
-            except Produto.DoesNotExist:
-                item['produto_obj'] = None
-        
-        except (KeyError, TypeError, ValueError):
-            print(f"Erro ao calcular item no carrinho: {item}") 
-            pass  
-    
-    return render(request, 'carrinho_detalhe.html', {
-        'carrinho': carrinho,
+    context = {
+        'carrinho_itens': carrinho_para_template,
         'total_carrinho': total_carrinho,
-    })
+    }
+    return render(request, 'carrinho_detalhe.html', context)
+
 
 def atualizar_quantidade_carrinho(request, produto_id, nova_quantidade):
     carrinho = request.session.get('carrinho', {})

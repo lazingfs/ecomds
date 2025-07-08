@@ -29,7 +29,7 @@ urlpatterns = [
     path ('produtoslista/', ProdutoListView.as_view(), name='produto_list'), #Lista de produtos
     path ('produtos/<slug:slug>/', ProdutoDetailView.as_view(), name='produto_detalhe'), #Pag. de detalhamento do produto
     path ('categorias/<slug:slug>/', CategoriaProdutoListView.as_view(), name='categoria_produto_list'), #Produtos por categoria
-    path('categorias/', CategoriaListView.as_view(), name='lista_categorias'), #Lista de categorias
+    path('categorias/', CategoriaListView.as_view(), name='lista_categorias'), #Lista geral de categorias
    
     path('adicionar/<int:produto_id>/', adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path ('carrinho/', carrinho_detalhe, name='carrinho_detalhe'), #Detalhe do carrinho

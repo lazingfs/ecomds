@@ -1,26 +1,115 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
-{% block title %}Lista de Produtos - Distribuidora Siade{% endblock %}
+{% block title %}Nossos Produtos{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/produto_list.css' %}">
-{% endblock  %} 
+<style>
+    :root {
+        --primary-color: #198754; /* Nosso tema verde */
+        --primary-hover: #157347;
+    }
+
+    /* Adicionado: um container para o título e o botão */
+    .page-header {
+        display: flex;
+        justify-content: space-between; /* Alinha os itens nas extremidades */
+        align-items: center; /* Alinha verticalmente */
+        margin: 40px 0;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .page-header h1 {
+        font-size: 2.8em;
+        font-weight: 600;
+        margin: 0; /* Remove a margem padrão do h1 */
+    }
+
+    /* Estilo do novo botão */
+    .btn-category {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 25px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-category:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 30px;
+        padding: 20px 0;
+    }
+
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .product-info {
+        padding: 20px;
+    }
+    
+    .product-info h3 {
+        font-size: 1.2em;
+        margin: 0 0 10px 0;
+    }
+
+    .product-price {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
 
 
 {% block content %}
-    <h1>Nossos Produtos</h1>
-    <div class="product-grid">
-        {% for produto in produtos %}
-            <div class="product-item">
-                <a href="{% url 'produto_detalhe' produto.slug %}">
-                    <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
-                    <h2>{{ produto.nome }}</h2>
-                    <p class="price">R$ {{ produto.preco }}</p>
-                </a>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock %}
+<div class="page-header">
+    <h1>Todos os Produtos</h1>
+    <a href="{% url 'lista_categorias' %}" class="btn-category">Navegar por Categoria</a>
+</div>
 
+<div class="product-grid">
+    {% for produto in object_list %} {# object_list é o padrão para ListView #}
+        <a href="{{ produto.get_absolute_url }}" class="product-card">
+            {% if produto.imagem %}
+                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+            {% else %}
+                <img src="{% static 'img/placeholder.png' %}" alt="Sem imagem">
+            {% endif %}
+            <div class="product-info">
+                <h3>{{ produto.nome }}</h3>
+                <p class="product-price">R$ {{ produto.preco|floatformat:2 }}</p>
+            </div>
+        </a>
+    {% empty %}
+        <p>Nenhum produto encontrado.</p>
+    {% endfor %}
+</div>
+{% endblock %}

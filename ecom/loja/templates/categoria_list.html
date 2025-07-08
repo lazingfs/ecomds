@@ -1,18 +1,118 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Categorias de Produtos{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/categoria_list.css' %}">
+<style>
+    :root {
+        --primary-color: #198754; /* Nosso tema verde */
+        --light-bg: #f8f9fa;
+        --border-color: #dee2e6;
+    }
+
+    .page-header {
+        text-align: center;
+        margin: 40px 0;
+    }
+
+    .page-header h1 {
+        font-size: 2.8em;
+        font-weight: 600;
+        color: #1c1c1c;
+    }
+
+    .page-header p {
+        font-size: 1.2em;
+        color: #6c757d;
+        max-width: 600px;
+        margin: 10px auto 0 auto;
+    }
+
+    /* Grid para os cartões de categoria */
+    .category-grid {
+        display: grid;
+        /* Cria colunas responsivas: elas terão no mínimo 280px e no máximo 1fr (fração do espaço) */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px; /* Espaçamento entre os cartões */
+        padding: 20px 0;
+    }
+
+    /* Estilo individual de cada cartão */
+    .category-card {
+        display: block;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+        text-decoration: none;
+        color: #333;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-8px); /* Efeito de "levantar" ao passar o mouse */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-image-placeholder {
+        height: 180px;
+        background-color: var(--primary-color);
+        /* Um gradiente sutil para dar um toque de design */
+        background-image: linear-gradient(45deg, var(--primary-color) 0%, #1c9d61 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 2.5em;
+        font-weight: bold;
+    }
+
+    .category-info {
+        padding: 25px;
+    }
+
+    .category-info h3 {
+        font-size: 1.5em;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    .category-info p {
+        font-size: 1em;
+        color: #6c757d;
+        line-height: 1.6;
+        /* Limita a descrição a 3 linhas para manter os cartões uniformes */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
 {% endblock %}
+
+
 {% block content %}
-    <div class="category-list-container">
-        <h1 class="category-list-header">Todas as Categorias</h1>
-        <ul class="category-list">
-            {% for categoria in categorias %}
-                <li class="category-item">
-                    <a href="{% url 'produtos_por_categoria' categoria.slug %}">{{ categoria.nome }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+
+<div class="page-header">
+    <h1>Nossas Categorias</h1>
+    <p>Explore nossa variedade de produtos navegando pelas categorias abaixo.</p>
+</div>
+
+<div class="category-grid">
+    {% for categoria in categorias %}
+        <a href="{% url 'categoria_produto_list' categoria.slug %}" class="category-card">
+            <div class="category-image-placeholder">
+                <span>{{ categoria.nome|first|upper }}</span>
+                </div>
+            <div class="category-info">
+                <h3>{{ categoria.nome }}</h3>
+                <p>{{ categoria.descricao|default:"Sem descrição disponível." }}</p>
+            </div>
+        </a>
+    {% empty %}
+        <p>Nenhuma categoria encontrada.</p>
+    {% endfor %}
+</div>
+
 {% endblock %}

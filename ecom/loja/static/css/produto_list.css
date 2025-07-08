@@ -1,36 +1,62 @@
- .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            justify-content: center;
-        }
-        .product-item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 280px;
-            text-align: center;
-        }
-        .product-item img {
-            max-width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display : block;
-            margin: 0 auto 10px;
-        }
-        .product-item h2 {
-            font-size: 1.2em;
-            margin-top: 10px;
-        }
-        .price {
-            color: #006400;
-            font-weight: bold;
-        }
+ :root {
+        --primary-color: #198754; /* Nosso tema verde */
+    }
 
-        price {
-            color: #006400;
-            font-weight: bold;
-        }
-        price {
-            color: #006400;
-            font-weight: bold;
-        }
+    /* Estilo para o cabeçalho da página */
+    .page-header {
+        text-align: center;
+        margin: 40px 0;
+    }
+    .page-header h1 {
+        font-size: 2.8em;
+        font-weight: 600;
+    }
+
+    /* A grade de produtos */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 30px;
+        padding: 20px 0;
+    }
+
+    /* O cartão de cada produto */
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        /* --- EFEITO HOVER ADICIONADO AQUI --- */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* A "mágica" acontece aqui */
+    .product-card:hover {
+        transform: translateY(-8px); /* Levanta o card */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12); /* Aumenta a sombra */
+    }
+    /* --- FIM DO EFEITO HOVER --- */
+
+    .product-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .product-info {
+        padding: 20px;
+    }
+    
+    .product-info h3 {
+        font-size: 1.2em;
+        margin: 0 0 10px 0;
+    }
+
+    .product-price {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
